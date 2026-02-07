@@ -9,8 +9,8 @@
     <application>
         <service
             android:name=".service.VoipService"
-            android:foregroundServiceType="microphone|phoneCall"
-            android:exported="false" />
+            android:exported="false"
+            android:foregroundServiceType="microphone|phoneCall" />
 
         <receiver
             android:name=".service.CallActionReceiver"

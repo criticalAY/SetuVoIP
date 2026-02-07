@@ -5,6 +5,7 @@ import androidx.annotation.StringRes
 import androidx.core.app.NotificationCompat
 import com.criticalay.setu.R
 
+/** Configuration class used to customize the appearance and behavior of VoIP notifications. */
 data class CallNotificationConfig(
     val showMute: Boolean = true,
     val showSpeaker: Boolean = true,
