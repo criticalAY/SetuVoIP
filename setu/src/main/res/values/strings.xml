@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="setu_channel_name">Active Calls</string>
+    <string name="setu_mute">Mute</string>
+    <string name="setu_unmute">Unmute</string>
+    <string name="setu_speaker">Speaker</string>
+    <string name="setu_earpiece">Earpiece</string>
+    <string name="setu_answer">Answer</string>
+    <string name="setu_decline">Decline</string>
+    <string name="setu_hang_up">Hang Up</string>
+
+    <!-- Errors -->
+    <string name="setu_error_network">Network connection lost. Please check your internet.</string>
+    <string name="setu_error_mic_permission">Microphone permission is required to make calls.</string>
+    <string name="setu_error_hardware_in_use">Microphone is being used by another application.</string>
+    <string name="setu_error_provider_default">Call failed (Error Code: %1$d)</string>
+
+    <!-- Call status -->
+    <string name="setu_status_ringing">Ringing…</string>
+    <string name="setu_status_connecting">Connecting…</string>
+    <string name="setu_status_ongoing">Call in Progress</string>
+    <string name="setu_status_reconnecting">Reconnecting…</string>
+</resources>
