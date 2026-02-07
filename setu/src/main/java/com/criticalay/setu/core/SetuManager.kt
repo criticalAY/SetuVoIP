@@ -20,6 +20,14 @@ object SetuManager {
     }
 
     /**
+     * Set or clear the active provider.
+     * Used internally by the library and for unit testing.
+     */
+    fun setActiveProvider(provider: VoipProvider?) {
+        this.activeProvider = provider
+    }
+
+    /**
      * Start a call with an optional custom configuration.
      */
     fun startCall(provider: VoipProvider, config: CallNotificationConfig = CallNotificationConfig()) {

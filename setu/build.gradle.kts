@@ -45,4 +45,8 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     testImplementation(libs.robolectric)
     testImplementation(libs.androidx.core)
+
+    testImplementation(libs.robolectric.v4111)
+    testImplementation(libs.mockk)
+    testImplementation(libs.kotlinx.coroutines.test)
 }
