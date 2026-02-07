@@ -2,6 +2,7 @@ package com.criticalay.setu.core
 
 import android.content.Context
 import android.content.Intent
+import androidx.annotation.VisibleForTesting
 import androidx.core.content.ContextCompat
 import com.criticalay.setu.provider.VoipProvider
 import com.criticalay.setu.service.VoipService
@@ -45,5 +46,12 @@ object SetuManager {
     fun endCall() {
         activeProvider?.endCall()
         activeProvider = null
+    }
+
+    @VisibleForTesting
+    fun reset() {
+        activeProvider = null
+        appContext = null
+        notificationConfig = CallNotificationConfig()
     }
 }
