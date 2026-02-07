@@ -12,6 +12,16 @@ import com.criticalay.setu.provider.CallState
 import com.criticalay.setu.provider.CallStatus
 import com.criticalay.setu.service.CallActionReceiver
 
+
+/**
+ * Manages the creation and updates of the foreground notification for VoIP calls.
+ *
+ * This class handles the complexity of Android notification channels, localized strings,
+ * and mapping [CallState] transitions to user-visible UI elements.
+ *
+ * @property context The [Context] used to access system services and resources.
+ * @constructor Creates a manager and automatically ensures the notification channel exists.
+ */
 class SetuNotificationManager(private val context: Context) {
     private val notificationManager = context.getSystemService(NotificationManager::class.java)
     private val config = SetuManager.notificationConfig
@@ -21,6 +31,18 @@ class SetuNotificationManager(private val context: Context) {
     }
 
 
+    /**
+     * Constructs the [Notification] object based on the current [CallState].
+     *
+     * This method performs the following:
+     * 1. Resolves localized status text or error messages.
+     * 2. Appends a live duration timer if the call is in the [CallStatus.CONNECTED] state.
+     * 3. Dynamically adds actions (Mute, Speaker, Answer, Hang Up) based on [SetuManager.notificationConfig].
+     * 4. Configures the intent to return to the app when the notification is tapped.
+     *
+     * @param state The current snapshot of the call's state (status, direction, errors, etc.).
+     * @return A fully configured [Notification] ready to be passed to [android.app.Service.startForeground].
+     */
     fun buildNotification(state: CallState): Notification {
         val baseText = if (state.error != CallError.None) {
             state.error.toHumanReadableString(context)
