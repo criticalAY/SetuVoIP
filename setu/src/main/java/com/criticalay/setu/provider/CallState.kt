@@ -16,8 +16,8 @@ package com.criticalay.setu.provider
  * @property error The specific error state, if any, encountered during the call.
  */
 data class CallState(
-    val callerName: String,
-    val callerHandle: String,
+    val callerName: String = "Unknown",
+    val callerHandle: String = "",
     val status: CallStatus = CallStatus.IDLE,
     val direction: CallDirection = CallDirection.OUTGOING,
     val connectTimestamp: Long? = null,
