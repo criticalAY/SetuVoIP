@@ -14,6 +14,7 @@ import com.criticalay.setu.util.SetuNotificationManager
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertNotNull
 import junit.framework.TestCase.assertTrue
+import org.junit.Assert
 import org.junit.Assert.assertNull
 import org.junit.Before
 import org.junit.Test
@@ -111,5 +112,37 @@ class SetuNotificationManagerTest {
         val notification = notificationManager.buildNotification(state)
 
         assertNotNull("ContentIntent should not be null", notification.contentIntent)
+    }
+
+    @Test
+    fun `buildNotification calculates call duration correctly after one minute`() {
+        val sixtyFiveSecondsAgo = System.currentTimeMillis() - 65_000
+
+        val state = CallState(
+            status = CallStatus.CONNECTED,
+            connectTimestamp = sixtyFiveSecondsAgo
+        )
+
+        val notification = notificationManager.buildNotification(state)
+        val contentText = NotificationCompat.getExtras(notification)
+            ?.getCharSequence(NotificationCompat.EXTRA_TEXT)
+            ?.toString()
+
+        assertEquals("Call in Progress • 01:05", contentText)
+    }
+
+    @Test
+    fun `notification shows Ongoing Call text when connectTimestamp is zero`() {
+        val state = CallState(
+            status = CallStatus.CONNECTED,
+            connectTimestamp = 0L
+        )
+
+        val notification = notificationManager.buildNotification(state)
+        val contentText = NotificationCompat.getExtras(notification)
+            ?.getCharSequence(NotificationCompat.EXTRA_TEXT)
+            ?.toString()
+
+        Assert.assertTrue("Should contain 'Call in Progress'", contentText?.contains("Call in Progress") == true)
     }
 }
