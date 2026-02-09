@@ -18,6 +18,7 @@ package com.criticalay.setu.provider
 data class CallState(
     val callerName: String = "Unknown",
     val callerHandle: String = "",
+    val callerNumber: String = "",
     val status: CallStatus = CallStatus.IDLE,
     val direction: CallDirection = CallDirection.OUTGOING,
     val connectTimestamp: Long? = null,

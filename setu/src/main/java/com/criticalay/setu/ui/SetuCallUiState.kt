@@ -7,6 +7,7 @@ import com.criticalay.setu.provider.CallStatus
  */
 data class SetuCallUiState<T>(
     val contactName: String = "Unknown",
+    val contactNumber: String = "",
     val avatarUrl: String? = null,
     val statusText: String = "",
     val durationText: String = "00:00",
