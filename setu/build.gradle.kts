@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.compose)
 }
 
 android {
@@ -29,6 +30,10 @@ android {
         targetCompatibility = JavaVersion.VERSION_11
     }
 
+    buildFeatures {
+        compose = true
+    }
+
     testOptions {
         unitTests {
             isIncludeAndroidResources = true
@@ -40,6 +45,9 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
+    implementation(libs.androidx.compose.runtime)
+    implementation(libs.androidx.material3)
+    implementation(libs.androidx.ui.tooling.preview)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -49,4 +57,5 @@ dependencies {
     testImplementation(libs.robolectric.v4111)
     testImplementation(libs.mockk)
     testImplementation(libs.kotlinx.coroutines.test)
+    debugImplementation(libs.androidx.ui.tooling)
 }

@@ -109,7 +109,6 @@ class VoipService : Service() {
      * timestamp provided by the active [VoipProvider].
      */
     private fun startTimer() {
-        // Prevent multiple timer instances
         if (timerJob?.isActive == true) return
 
         timerJob = serviceScope.launch {

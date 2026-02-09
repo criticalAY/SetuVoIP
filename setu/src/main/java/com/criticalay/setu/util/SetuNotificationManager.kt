@@ -108,8 +108,22 @@ class SetuNotificationManager(private val context: Context) {
     }
 
     private fun getLaunchIntent(): PendingIntent? {
-        val intent = context.packageManager.getLaunchIntentForPackage(context.packageName)
-        return PendingIntent.getActivity(context, 2, intent, PendingIntent.FLAG_IMMUTABLE)
+        if (config.contentIntent != null) return config.contentIntent
+
+        val intent = if (config.targetActivity != null) {
+            Intent(context, config.targetActivity).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP
+            }
+        } else {
+            context.packageManager.getLaunchIntentForPackage(context.packageName)
+        }
+
+        return PendingIntent.getActivity(
+            context,
+            2,
+            intent,
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
     }
 
     private fun createNotificationChannel() {

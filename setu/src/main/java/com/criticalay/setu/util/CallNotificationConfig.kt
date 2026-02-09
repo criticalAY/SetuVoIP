@@ -1,5 +1,6 @@
 package com.criticalay.setu.util
 
+import android.app.PendingIntent
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.core.app.NotificationCompat
@@ -9,6 +10,8 @@ import com.criticalay.setu.R
 data class CallNotificationConfig(
     val showMute: Boolean = true,
     val showSpeaker: Boolean = true,
+    val targetActivity: Class<*>? = null,
+    val contentIntent: PendingIntent? = null,
 
     @param:StringRes internal val channelName: Int = R.string.setu_channel_name,
     @param:StringRes internal val muteLabel: Int = R.string.setu_mute,
