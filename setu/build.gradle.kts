@@ -75,7 +75,7 @@ afterEvaluate {
 
                 groupId = "com.criticalay.setu"
                 artifactId = "setu"
-                version = "1.1.2"
+                version = "1.2.0"
             }
         }
     }
