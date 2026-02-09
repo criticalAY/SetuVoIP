@@ -39,7 +39,7 @@ android {
 }
 
 dependencies {
-    implementation(project(":setu"))
+    implementation("com.github.criticalAY:SetuVoIP:v1.1.0")
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

@@ -60,15 +60,13 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
 }
 
-publishing {
-    publications {
-        register<MavenPublication>("release") {
-            groupId = "com.github.criticalAY"
-            artifactId = "setu"
-            version = "1.1.0"
-
-            afterEvaluate {
-                from(components.findByName("release"))
+afterEvaluate {
+    publishing {
+        publications {
+            register<MavenPublication>("release") {
+                groupId = "com.github.criticalAY"
+                artifactId = "setu"
+                version = "1.1.0"
             }
         }
     }
