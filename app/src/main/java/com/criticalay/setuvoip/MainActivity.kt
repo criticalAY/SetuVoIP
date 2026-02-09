@@ -45,3 +45,7 @@ fun GreetingPreview() {
         Greeting("Android")
     }
 }
+
+class ABC: VoipProvider {
+
+}

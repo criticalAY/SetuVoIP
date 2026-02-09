@@ -38,6 +38,13 @@ android {
             isIncludeAndroidResources = true
         }
     }
+
+    publishing {
+        singleVariant("release") {
+            withSourcesJar()
+            withJavadocJar()
+        }
+    }
 }
 
 dependencies {
@@ -63,10 +70,12 @@ dependencies {
 afterEvaluate {
     publishing {
         publications {
-            register<MavenPublication>("release") {
-                groupId = "com.github.criticalAY"
+            create<MavenPublication>("release") {
+                from(components["release"])
+
+                groupId = "com.criticalay.setu"
                 artifactId = "setu"
-                version = "1.1.1"
+                version = "1.0.0"
             }
         }
     }
