@@ -17,12 +17,15 @@ robolectric = "4.16.1"
 robolectricVersion = "4.11.1"
 runtime = "1.10.2"
 material3 = "1.4.0"
+timber = "5.0.1"
+timberVersion = "5.0.1"
 uiToolingPreview = "1.10.2"
 uiTooling = "1.10.2"
 
 [libraries]
 androidx-core = { module = "androidx.test:core", version.ref = "core" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+jakewharton-timber = { module = "com.jakewharton.timber:timber", version.ref = "timberVersion" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }

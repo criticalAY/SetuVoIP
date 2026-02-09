@@ -30,6 +30,7 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 
     testOptions {
@@ -46,12 +47,13 @@ dependencies {
     implementation(libs.androidx.compose.runtime)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.ui.tooling.preview)
+    implementation(libs.jakewharton.timber)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     testImplementation(libs.robolectric)
     testImplementation(libs.androidx.core)
-
     testImplementation(libs.robolectric.v4111)
     testImplementation(libs.mockk)
     testImplementation(libs.kotlinx.coroutines.test)

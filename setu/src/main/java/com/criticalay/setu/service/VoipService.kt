@@ -27,6 +27,7 @@ import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 /**
  * The core Foreground Service responsible for maintaining the VoIP call lifecycle.
@@ -46,20 +47,32 @@ class VoipService : Service() {
 
     override fun onCreate() {
         super.onCreate()
+        Timber.i("VoipService created")
         setuNotificationManager = SetuNotificationManager(this)
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        val action = intent?.action
+        Timber.d("onStartCommand received action: $action")
+
         val provider = SetuManager.getActiveProvider() ?: run {
+            Timber.e("No active provider found. Shutting down service.")
             shutdown()
             return START_NOT_STICKY
         }
 
-        when (intent?.action) {
-            ACTION_HANG_UP -> provider.endCall()
-            ACTION_ANSWER -> provider.answerCall()
+        when (action) {
+            ACTION_HANG_UP -> {
+                Timber.i("User action: Hang Up")
+                provider.endCall()
+            }
+            ACTION_ANSWER -> {
+                Timber.i("User action: Answer")
+                provider.answerCall()
+            }
             else -> {
                 if (stateCollectionJob == null) {
+                    Timber.d("Starting CallState collection flow")
                     stateCollectionJob = serviceScope.launch {
                         provider.state.collect { handleState(it) }
                     }
@@ -70,8 +83,11 @@ class VoipService : Service() {
     }
 
     private fun handleState(state: CallState) {
+        Timber.v("State update received: ${state.status}")
+
         when (state.status) {
             CallStatus.DISCONNECTING, CallStatus.DISCONNECTED -> {
+                Timber.i("Call disconnected/ing. Initiating shutdown.")
                 shutdown()
                 return
             }
@@ -86,43 +102,38 @@ class VoipService : Service() {
         updateForegroundNotification(state)
     }
 
-    /**
-     * Helper to handle the startForeground logic with Android 14+ requirements.
-     */
     private fun updateForegroundNotification(state: CallState) {
         val notification = setuNotificationManager.buildNotification(state)
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            startForeground(
-                SetuNotificationManager.NOTIFICATION_ID,
-                notification,
-                ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE or ServiceInfo.FOREGROUND_SERVICE_TYPE_PHONE_CALL
-            )
-        } else {
-            startForeground(SetuNotificationManager.NOTIFICATION_ID, notification)
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                Timber.d("Starting foreground with Android 14+ types (Mic & Phone)")
+                startForeground(
+                    SetuNotificationManager.NOTIFICATION_ID,
+                    notification,
+                    ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE or ServiceInfo.FOREGROUND_SERVICE_TYPE_PHONE_CALL
+                )
+            } else {
+                startForeground(SetuNotificationManager.NOTIFICATION_ID, notification)
+            }
+        } catch (e: Exception) {
+            Timber.e(e, "Failed to start foreground service. Check permissions/manifest.")
         }
     }
 
-    /**
-     * Initiates a coroutine job that refreshes the notification every second.
-     * The duration is calculated inside [SetuNotificationManager] using the
-     * timestamp provided by the active [VoipProvider].
-     */
     private fun startTimer() {
         if (timerJob?.isActive == true) return
 
+        Timber.d("Starting notification duration timer")
         timerJob = serviceScope.launch {
             while (isActive) {
                 val provider = SetuManager.getActiveProvider()
                 if (provider != null) {
-                    // We just trigger a refresh.
-                    // buildNotification() handles the math: (Now - state.connectTimestamp)
-                    val notification =
-                        setuNotificationManager.buildNotification(provider.state.value)
+                    val notification = setuNotificationManager.buildNotification(provider.state.value)
                     val manager = getSystemService(NotificationManager::class.java)
                     manager.notify(SetuNotificationManager.NOTIFICATION_ID, notification)
                 } else {
-                    // If provider vanishes, stop the timer
+                    Timber.w("Timer running but provider is null. Stopping.")
                     stopTimer()
                 }
                 delay(1000)
@@ -131,11 +142,15 @@ class VoipService : Service() {
     }
 
     private fun stopTimer() {
-        timerJob?.cancel()
-        timerJob = null
+        if (timerJob != null) {
+            Timber.d("Stopping notification duration timer")
+            timerJob?.cancel()
+            timerJob = null
+        }
     }
 
     private fun shutdown() {
+        Timber.i("Service shutdown sequence initiated")
         stopTimer()
         stateCollectionJob?.cancel()
         stateCollectionJob = null
@@ -151,6 +166,7 @@ class VoipService : Service() {
     }
 
     override fun onDestroy() {
+        Timber.i("VoipService destroyed")
         shutdown()
         super.onDestroy()
     }

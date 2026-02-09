@@ -2,15 +2,19 @@ package com.criticalay.setu.util
 
 import android.app.*
 import android.content.*
+import android.media.RingtoneManager
 import android.os.Build
+import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.criticalay.setu.R
 import com.criticalay.setu.core.SetuManager
+import com.criticalay.setu.permission.SetuPermissions
 import com.criticalay.setu.provider.CallDirection
 import com.criticalay.setu.provider.CallError
 import com.criticalay.setu.provider.CallState
 import com.criticalay.setu.provider.CallStatus
 import com.criticalay.setu.service.CallActionReceiver
+import timber.log.Timber
 
 
 /**
@@ -44,19 +48,22 @@ class SetuNotificationManager(private val context: Context) {
      * @return A fully configured [Notification] ready to be passed to [android.app.Service.startForeground].
      */
     fun buildNotification(state: CallState): Notification {
+        Timber.d("Building notification for state: ${state.status}, Direction: ${state.direction}")
+
         val baseText = if (state.error != CallError.None) {
+            Timber.e("Call error detected: ${state.error}")
             state.error.toHumanReadableString(context)
         } else {
             state.status.toHumanReadableString(context)
         }
 
-        // Logic for the ticking timer
         val contentText = if (state.status == CallStatus.CONNECTED && state.connectTimestamp != null) {
             val duration = (System.currentTimeMillis() - state.connectTimestamp) / 1000
             "$baseText • ${CallTimer.formatDuration(duration)}"
         } else {
             baseText
         }
+
         val builder = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(config.smallIcon)
             .setContentTitle(state.callerName)
@@ -67,6 +74,15 @@ class SetuNotificationManager(private val context: Context) {
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE)
             .setContentIntent(getLaunchIntent())
+
+        if (state.status == CallStatus.RINGING && state.direction == CallDirection.INCOMING) {
+            if (SetuPermissions.canShowFullScreenIntent(context)) {
+                Timber.i("Setting full screen intent for incoming call")
+                builder.setFullScreenIntent(getLaunchIntent(), true)
+            } else {
+                Timber.w("Full screen intent permission is denied. Call will show as a normal notification.")
+            }
+        }
 
         if (config.showMute) builder.addMuteAction(state.isMuted)
         if (config.showSpeaker) builder.addSpeakerAction(state.isOnSpeaker)
@@ -128,8 +144,11 @@ class SetuNotificationManager(private val context: Context) {
 
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(CHANNEL_ID, context.getString(config.channelName), NotificationManager.IMPORTANCE_LOW).apply {
+            val importance = NotificationManager.IMPORTANCE_HIGH
+            val channel = NotificationChannel(CHANNEL_ID, context.getString(config.channelName), importance).apply {
+                description = "Channel for VoIP incoming and ongoing calls"
                 lockscreenVisibility = Notification.VISIBILITY_PUBLIC
+                setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE), null)
             }
             notificationManager.createNotificationChannel(channel)
         }

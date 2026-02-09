@@ -12,6 +12,7 @@ import java.lang.ref.WeakReference
 object SetuManager {
     private var appContext: WeakReference<Context>? = null
     private var activeProvider: VoipProvider? = null
+    private var isDebugMode = false
 
     var notificationConfig: CallNotificationConfig = CallNotificationConfig()
         private set
